@@ -1,0 +1,17 @@
+api:
+    resource: '@AppBundle/Controller/'
+    type: annotation
+    prefix: "/api/v{version}"
+    defaults: {version: 1.1}
+    requirements:
+        version: '^[1-9]+\.[0-9]+'
+
+api_auth:
+    path: "/api/v{version}/auth"
+    defaults: {version: 1.1}
+    requirements:
+        version: '^[1-9]+\.[0-9]+'
+
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc

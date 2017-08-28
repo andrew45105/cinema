@@ -1,0 +1,33 @@
+imports:
+    - { resource: config_dev.yml }
+
+framework:
+    test: ~
+    session:
+        storage_id: session.storage.mock_file
+    profiler:
+        collect: false
+
+web_profiler:
+    toolbar: false
+    intercept_redirects: false
+
+swiftmailer:
+    disable_delivery: true
+
+doctrine:
+    dbal:
+        driver:   pdo_mysql
+        host:     "%test_database_host%"
+        port:     "%test_database_port%"
+        dbname:   "%test_database_name%"
+        user:     "%test_database_user%"
+        password: "%test_database_password%"
+        charset:  UTF8
+
+lexik_jwt_authentication:
+    private_key_path:   '%kernel.root_dir%/../var/jwt/private-test.pem'
+    public_key_path:    '%kernel.root_dir%/../var/jwt/public-test.pem'
+    pass_phrase:        'test'
+
+liip_functional_test: ~

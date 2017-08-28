@@ -1,0 +1,38 @@
+# To get started with security, check out the documentation:
+# https://symfony.com/doc/current/security.html
+security:
+
+    encoders:
+        AppBundle\Entity\User: bcrypt
+
+    role_hierarchy:
+        ROLE_MANAGER:     ROLE_USER
+        ROLE_ADMIN:       ROLE_MANAGER
+        ROLE_SUPER_ADMIN: ROLE_ADMIN
+
+    providers:
+        user_provider:
+            entity:
+                class: AppBundle:User
+                property: phone
+
+    firewalls:
+        api:
+            pattern:   ^/api
+            stateless: true
+            anonymous: true
+            form_login:
+                check_path:               api_auth
+                success_handler:          lexik_jwt_authentication.handler.authentication_success
+                failure_handler:          lexik_jwt_authentication.handler.authentication_failure
+                require_previous_session: false
+            guard:
+                authenticators:
+                    - lexik_jwt_authentication.jwt_token_authenticator
+
+    access_control:
+        - { path: ^/api/doc, methods: [GET], roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v(.*)/users, methods: [POST], roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v(.*)/auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v(.*)/*, roles: ROLE_USER }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

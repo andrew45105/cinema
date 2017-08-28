@@ -1,0 +1,93 @@
+services:
+
+    #Authentication
+    app.jwt_token_authenticator:
+        class: AppBundle\Security\JwtAuthenticator
+        arguments: ['@doctrine.orm.entity_manager', '@lexik_jwt_authentication.encoder']
+
+    #Normalizers
+    app.normalizer.exception:
+        class: AppBundle\Serializer\Normalizer\ExceptionNormalizer
+        arguments: ["%kernel.environment%"]
+        tags:
+            - { name: serializer.normalizer }
+
+    #Repositories
+    app.repository.user:
+        class: AppBundle\Repository\DefaultRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\User
+
+    app.repository.locality:
+        class: AppBundle\Repository\DefaultRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Locality
+
+    app.repository.cinema:
+        class: AppBundle\Repository\DefaultRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Cinema
+
+    app.repository.cinema_seat:
+        class: AppBundle\Repository\DefaultRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\CinemaSeat
+
+    app.repository.cinema_manager:
+        class: AppBundle\Repository\DefaultRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\CinemaManager
+
+    app.repository.genre:
+        class: AppBundle\Repository\DefaultRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Genre
+
+    app.repository.seance:
+        class: AppBundle\Repository\DefaultRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\Seance
+
+    app.repository.seance_price:
+        class: AppBundle\Repository\DefaultRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\SeancePrice
+
+    app.repository.user_order:
+        class: AppBundle\Repository\DefaultRepository
+        factory: ["@doctrine.orm.entity_manager", getRepository]
+        arguments:
+            - AppBundle\Entity\UserOrder
+
+    #Services
+    app.service.auth:
+        class: AppBundle\Service\AuthService
+        arguments:
+          - "@app.repository.user"
+          - "@security.encoder_factory"
+          - "@lexik_jwt_authentication.encoder"
+
+    app.service.sms:
+        class: AppBundle\Service\SmsService
+        arguments:
+            - "%twilio_account_sid%"
+            - "%twilio_auth_token%"
+            - "%twilio_phone_number%"
+
+    # Services entity
+    app.service.entity.user:
+        class: AppBundle\Service\Entity\UserService
+        arguments:
+            - "@security.encoder_factory"
+            - "@app.service.sms"
+            - "@validator"
+        calls:
+            - [setRepository, ['@app.repository.user']]
