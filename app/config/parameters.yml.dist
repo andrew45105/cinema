@@ -35,6 +35,9 @@ parameters:
     test_users_auth_code: abcd123
     locale: en
 
-    twilio_account_sid: someId
-    twilio_auth_token: someToken
-    twilio_phone_number: someNumber
+    twilio:
+        account_id: someId
+        auth_token: someToken
+        sender_phone: someNumber
+
+    project_name: CinemaSearch

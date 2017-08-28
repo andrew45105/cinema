@@ -8,27 +8,27 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Controller\Annotations as Rest;
 
 /**
- * Class AuthController
+ * Class TokenController
  *
  * @author Andrey Antonov <apologboy@gmail.com>
  */
-class AuthController extends FOSRestController
+class TokenController extends FOSRestController
 {
     /**
      * @ApiDoc(
-     *  section="auth",
-     *  description="Get auth token for api requests"
+     *  section="token",
+     *  description="Generate auth token for api requests"
      * )
-     * @Rest\Post("/auth", name="post_auth")
+     * @Rest\Post("/token", name="post_token")
      * @Rest\RequestParam(name="phone", requirements="\+?[\d]+", description="phone")
      * @Rest\RequestParam(name="auth_code", description="auth code")
      * @param ParamFetcherInterface $paramFetcher
      * @return array
      */
-    public function postAuthAction(ParamFetcherInterface $paramFetcher)
+    public function postTokenAction(ParamFetcherInterface $paramFetcher)
     {
         return $this
-            ->get('app.service.auth')
-            ->getAuthToken($paramFetcher->all());
+            ->get('app.service.token')
+            ->generateToken($paramFetcher->all());
     }
 }

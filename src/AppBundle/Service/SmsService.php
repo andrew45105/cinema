@@ -27,37 +27,45 @@ class SmsService
     private $senderPhone;
 
     /**
+     * @var string
+     */
+    private $projectName;
+
+    /**
      * SmsService constructor.
      *
-     * @param string $accountId
-     * @param string $authToken
-     * @param $senderPhone
+     * @param array $twilio
+     * @param string $projectName
      */
     public function __construct(
-        string $accountId,
-        string $authToken,
-        string $senderPhone)
+        array $twilio,
+        string $projectName)
     {
-        $this->accountId = $accountId;
-        $this->authToken = $authToken;
-        $this->senderPhone = $senderPhone;
+        $this->accountId = $twilio['account_id'];
+        $this->authToken = $twilio['auth_token'];
+        $this->senderPhone = $twilio['sender_phone'];
+        $this->projectName = $projectName;
     }
 
     /**
      * Send SMS to user with auth code
      *
      * @param string $subscriberPhone
-     * @param string $authCode
+     * @param string $rawAuthCode
      * @return void
      */
-    public function send(string $subscriberPhone, string $authCode)
+    public function send(string $subscriberPhone, string $rawAuthCode)
     {
         $client = new Client($this->accountId, $this->authToken);
         $client->messages->create(
             $subscriberPhone,
             [
                 'from' => $this->senderPhone,
-                'body' => "You authentication code is {$authCode}",
+                'body' => sprintf(
+                    'Your authentication code for %s is %s',
+                    $this->projectName,
+                    $rawAuthCode
+                ),
             ]
         );
     }

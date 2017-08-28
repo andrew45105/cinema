@@ -22,7 +22,7 @@ security:
             stateless: true
             anonymous: true
             form_login:
-                check_path:               api_auth
+                check_path:               post_token
                 success_handler:          lexik_jwt_authentication.handler.authentication_success
                 failure_handler:          lexik_jwt_authentication.handler.authentication_failure
                 require_previous_session: false
@@ -32,6 +32,7 @@ security:
 
     access_control:
         - { path: ^/api/doc, methods: [GET], roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v(.*)/users/code, methods: [POST], roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v(.*)/users, methods: [POST], roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v(.*)/auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v(.*)/*, roles: ROLE_USER }

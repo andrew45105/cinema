@@ -68,8 +68,8 @@ services:
             - AppBundle\Entity\UserOrder
 
     #Services
-    app.service.auth:
-        class: AppBundle\Service\AuthService
+    app.service.token:
+        class: AppBundle\Service\TokenService
         arguments:
           - "@app.repository.user"
           - "@security.encoder_factory"
@@ -78,9 +78,8 @@ services:
     app.service.sms:
         class: AppBundle\Service\SmsService
         arguments:
-            - "%twilio_account_sid%"
-            - "%twilio_auth_token%"
-            - "%twilio_phone_number%"
+            - "%twilio%"
+            - "%project_name%"
 
     # Services entity
     app.service.entity.user:

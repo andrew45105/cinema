@@ -5,6 +5,8 @@ namespace AppBundle\Service\Entity;
 use AppBundle\Entity\User;
 use AppBundle\Service\SmsService;
 use RonteLtd\CommonBundle\Service\AbstractBaseService;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -44,20 +46,42 @@ class UserService extends AbstractBaseService
     }
 
     /**
+     * Creates an user
+     *
      * @param array $data
      * @return User
      */
     public function create(array $data)
     {
+        if ($this->getRepository()->findOneBy(['phone' => $data['phone']])) {
+            throw new ConflictHttpException(
+                "User with phone '{$data['phone']}'' already exists");
+        }
+
         $user = new User($data);
         $user->setEnabled(true);
         $rawAuthCode = $this->generateAuthCode();
         $user->setAuthCode($rawAuthCode);
         $this->encodeAuthCode($user);
 
-        $this->smsService->send($user->getPhone(), $rawAuthCode);
+        /**
+         * @ToDo Sending auth code to user phone (remove this stub on production)
+         */
+        //$this->smsService->send($user->getPhone(), $rawAuthCode);
 
         return $this->save($user);
+    }
+
+    /**
+     * Updates an user
+     *
+     * @param User $user
+     * @param array $data
+     * @return User
+     */
+    public function update(User $user, array $data)
+    {
+        // @ToDo implement this method
     }
 
     /**
@@ -66,7 +90,7 @@ class UserService extends AbstractBaseService
      * @param int $digits
      * @return int
      */
-    public function generateAuthCode(int $digits = 4): int
+    public function generateAuthCode(int $digits = 6): int
     {
         return rand(pow(10, $digits - 1), pow(10, $digits) - 1);
     }

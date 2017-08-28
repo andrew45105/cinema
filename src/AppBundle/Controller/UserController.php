@@ -35,5 +35,19 @@ class UserController extends FOSRestController
             ->create($paramFetcher->all());
     }
 
-
+    /**
+     * @ApiDoc(
+     *  section="user",
+     *  description="Create new auth code for user"
+     * )
+     *
+     * @Rest\Post("/users/code", name="post_user_code")
+     * @Rest\RequestParam(name="phone", requirements="\+?[\d]+", description="phone")
+     * @param ParamFetcherInterface $paramFetcher
+     * @return User
+     */
+    public function postUserCodeAction(ParamFetcherInterface $paramFetcher)
+    {
+        // @ToDo implement this method
+    }
 }

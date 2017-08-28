@@ -9,11 +9,11 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 /**
- * Class AuthService
+ * Class TokenService
  *
  * @author Andrey Antonov <apologboy@gmail.com>
  */
-class AuthService
+class TokenService
 {
     /**
      * @var DefaultRepository
@@ -31,7 +31,8 @@ class AuthService
     private $jwtEncoder;
 
     /**
-     * AuthService constructor.
+     * TokenService constructor.
+     *
      * @param DefaultRepository $userRepository
      * @param EncoderFactoryInterface $encoderFactory
      * @param JWTEncoderInterface $jwtEncoder
@@ -48,7 +49,7 @@ class AuthService
 
 
     /**
-     * Gets auth token
+     * Generates auth token
      *
      * @param array $params
      * @return array
@@ -56,7 +57,7 @@ class AuthService
      * @throws NotFoundHttpException
      * @throws AccessDeniedHttpException
      */
-    public function getAuthToken(array $params): array
+    public function generateToken(array $params): array
     {
         $phone = $params['phone'];
         $authCode = $params['auth_code'];

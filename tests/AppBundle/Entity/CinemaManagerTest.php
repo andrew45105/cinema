@@ -62,7 +62,7 @@ class CinemaManagerTest extends BaseTestCase
      */
     public function testSetGetManager()
     {
-        $newManager = (new User())->fromArray([
+        $newManager = new User([
             'username' => 'user',
         ]);
         self::assertInstanceOf(CinemaManager::class, $this->cinemaManager->setManager($newManager));
