@@ -55,6 +55,8 @@ class CinemaManager extends AbstractBaseEntity
     }
 
     /**
+     * Get cinema
+     *
      * @return Cinema
      */
     public function getCinema(): Cinema
@@ -63,6 +65,8 @@ class CinemaManager extends AbstractBaseEntity
     }
 
     /**
+     * Set cinema
+     *
      * @param Cinema $cinema
      *
      * @return CinemaManager
@@ -75,6 +79,8 @@ class CinemaManager extends AbstractBaseEntity
     }
 
     /**
+     * Get manager
+     *
      * @return User
      */
     public function getManager(): User
@@ -83,6 +89,8 @@ class CinemaManager extends AbstractBaseEntity
     }
 
     /**
+     * Set manager
+     *
      * @param User $manager
      *
      * @return CinemaManager
@@ -95,6 +103,8 @@ class CinemaManager extends AbstractBaseEntity
     }
 
     /**
+     * Is confirmed
+     *
      * @return bool
      */
     public function isConfirmed(): bool
@@ -103,6 +113,8 @@ class CinemaManager extends AbstractBaseEntity
     }
 
     /**
+     * Set confirmed
+     *
      * @param bool $confirmed
      *
      * @return CinemaManager

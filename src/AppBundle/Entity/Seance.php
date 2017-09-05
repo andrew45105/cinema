@@ -133,7 +133,7 @@ class Seance extends AbstractBaseEntity
     }
 
     /**
-     * Set showingAt
+     * Set showing at
      *
      * @param \DateTime $showingAt
      *
@@ -147,7 +147,7 @@ class Seance extends AbstractBaseEntity
     }
 
     /**
-     * Get showingAt
+     * Get showing at
      *
      * @return \DateTime
      */
@@ -157,6 +157,8 @@ class Seance extends AbstractBaseEntity
     }
 
     /**
+     * Get seances prices
+     *
      * @return Collection
      */
     public function getSeancesPrices(): Collection
@@ -165,6 +167,8 @@ class Seance extends AbstractBaseEntity
     }
 
     /**
+     * Add seance price
+     *
      * @param SeancePrice $seancePrice
      *
      * @return Seance
@@ -180,6 +184,8 @@ class Seance extends AbstractBaseEntity
     }
 
     /**
+     * Remove seance price
+     *
      * @param SeancePrice $seancePrice
      *
      * @return Seance

@@ -145,7 +145,7 @@ class UserOrder extends AbstractBaseEntity
     }
 
     /**
-     * Set cinemaSeat
+     * Set cinema seat
      *
      * @param CinemaSeat|null $cinemaSeat
      *
@@ -159,7 +159,7 @@ class UserOrder extends AbstractBaseEntity
     }
 
     /**
-     * Get cinemaSeat
+     * Get cinema seat
      *
      * @return CinemaSeat|null
      */
@@ -169,7 +169,7 @@ class UserOrder extends AbstractBaseEntity
     }
 
     /**
-     * Set spectatorType
+     * Set spectator type
      *
      * @param string $spectatorType
      *
@@ -183,7 +183,7 @@ class UserOrder extends AbstractBaseEntity
     }
 
     /**
-     * Get spectatorType
+     * Get spectator type
      *
      * @return string
      */

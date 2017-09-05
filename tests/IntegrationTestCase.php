@@ -52,7 +52,7 @@ abstract class IntegrationTestCase extends BaseTestCase
             'auth_code' => $authCode,
         ];
 
-        $client->request('POST', '/api/v1.1/auth', $data);
+        $client->request('POST', '/api/v1.1/token', $data);
         $response = $client->getResponse();
         $content = json_decode($response->getContent());
         $token = $content->access_token;

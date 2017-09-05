@@ -60,7 +60,6 @@ class LoadUserData extends AbstractBaseFixture
         $users[4]->addRole('ROLE_ADMIN');
 
         foreach ($users as $user) {
-            $userService->encodeAuthCode($user);
             $manager->persist($user);
             $this->addReference('user_' . $user->getPhone(), $user);
         }

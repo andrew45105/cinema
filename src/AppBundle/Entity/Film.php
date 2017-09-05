@@ -160,6 +160,8 @@ class Film extends AbstractBaseEntity
     }
 
     /**
+     * Get genres
+     *
      * @return Collection
      */
     public function getGenres(): Collection
@@ -168,6 +170,8 @@ class Film extends AbstractBaseEntity
     }
 
     /**
+     * Add genre
+     *
      * @param Genre $genre
      *
      * @return Film
@@ -182,6 +186,8 @@ class Film extends AbstractBaseEntity
     }
 
     /**
+     * Remove genre
+     *
      * @param Genre $genre
      *
      * @return Film
@@ -268,7 +274,7 @@ class Film extends AbstractBaseEntity
     }
 
     /**
-     * Set minAge
+     * Set min age
      *
      * @param integer $minAge
      *
@@ -282,7 +288,7 @@ class Film extends AbstractBaseEntity
     }
 
     /**
-     * Get minAge
+     * Get min age
      *
      * @return int
      */
@@ -292,7 +298,7 @@ class Film extends AbstractBaseEntity
     }
 
     /**
-     * Set yearOfMake
+     * Set year of make
      *
      * @param integer $yearOfMake
      *
@@ -306,7 +312,7 @@ class Film extends AbstractBaseEntity
     }
 
     /**
-     * Get yearOfMake
+     * Get year of make
      *
      * @return int
      */

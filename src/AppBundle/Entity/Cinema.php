@@ -150,6 +150,8 @@ class Cinema extends AbstractBaseEntity
     }
 
     /**
+     * Get cinemas seats
+     *
      * @return Collection
      */
     public function getCinemasSeats(): Collection
@@ -158,6 +160,8 @@ class Cinema extends AbstractBaseEntity
     }
 
     /**
+     * Add cinema seat
+     *
      * @param CinemaSeat $cinemaSeat
      *
      * @return Cinema
@@ -173,6 +177,8 @@ class Cinema extends AbstractBaseEntity
     }
 
     /**
+     * Remove cinema seat
+     *
      * @param CinemaSeat $cinemaSeat
      *
      * @return Cinema
@@ -211,6 +217,8 @@ class Cinema extends AbstractBaseEntity
     }
 
     /**
+     * Get contacts
+     *
      * @return array|null
      */
     public function getContacts(): ?array
@@ -219,6 +227,8 @@ class Cinema extends AbstractBaseEntity
     }
 
     /**
+     * Set contacts
+     *
      * @param array|null $contacts
      *
      * @return Cinema
@@ -231,6 +241,8 @@ class Cinema extends AbstractBaseEntity
     }
 
     /**
+     * Is confirmed
+     *
      * @return bool
      */
     public function isConfirmed(): bool
@@ -239,6 +251,8 @@ class Cinema extends AbstractBaseEntity
     }
 
     /**
+     * Set confirmed
+     *
      * @param bool $confirmed
      *
      * @return Cinema

@@ -3,10 +3,14 @@
 namespace AppBundle\Service\Entity;
 
 use AppBundle\Entity\User;
+use AppBundle\Repository\DefaultRepository;
+use Doctrine\ORM\Query;
 use AppBundle\Service\SmsService;
 use RonteLtd\CommonBundle\Service\AbstractBaseService;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -28,21 +32,50 @@ class UserService extends AbstractBaseService
     private $smsService;
 
     /**
+     * @var DefaultRepository
+     */
+    private $localityRepository;
+
+    /**
+     * @var array
+     */
+    private $usersRoles;
+
+    /**
      * UserService constructor.
      *
-     * @param EncoderFactoryInterface $encoderFactory
-     * @param SmsService $smsService
      * @param ValidatorInterface $validator
+     * @param array$roles
      */
-    public function __construct(
-        EncoderFactoryInterface $encoderFactory,
-        SmsService $smsService,
-        ValidatorInterface $validator)
+    public function __construct(ValidatorInterface $validator, array $roles)
     {
-        $this->encoderFactory = $encoderFactory;
-        $this->smsService = $smsService;
+        $this->usersRoles = $roles;
 
         parent::__construct($validator);
+    }
+
+    /**
+     * @param EncoderFactoryInterface $encoderFactory
+     */
+    public function setEncoderFactory(EncoderFactoryInterface $encoderFactory)
+    {
+        $this->encoderFactory = $encoderFactory;
+    }
+
+    /**
+     * @param SmsService $smsService
+     */
+    public function setSmsService(SmsService $smsService)
+    {
+        $this->smsService = $smsService;
+    }
+
+    /**
+     * @param DefaultRepository $repository
+     */
+    public function setLocalityRepository(DefaultRepository $repository)
+    {
+        $this->localityRepository = $repository;
     }
 
     /**
@@ -50,6 +83,7 @@ class UserService extends AbstractBaseService
      *
      * @param array $data
      * @return User
+     * @throws ConflictHttpException
      */
     public function create(array $data)
     {
@@ -62,7 +96,32 @@ class UserService extends AbstractBaseService
         $user->setEnabled(true);
         $rawAuthCode = $this->generateAuthCode();
         $user->setAuthCode($rawAuthCode);
-        $this->encodeAuthCode($user);
+
+        /**
+         * @ToDo Sending auth code to user phone (remove this stub on production)
+         */
+        //$this->smsService->send($user->getPhone(), $rawAuthCode);
+
+        return $this->save($user);
+    }
+
+    /**
+     * Creates new auth code for existing user
+     *
+     * @param string $phone
+     * @return User
+     */
+    public function createAuthCode(string $phone)
+    {
+        if (!$user = $this->getRepository()->findOneBy(['phone' => $phone])) {
+            throw new ConflictHttpException(
+                "User with phone '{$phone}' does not exists");
+        }
+
+        $this->checkUserCanUpdateAuthCode($user);
+
+        $rawAuthCode = $this->generateAuthCode();
+        $user->setAuthCode($rawAuthCode);
 
         /**
          * @ToDo Sending auth code to user phone (remove this stub on production)
@@ -81,7 +140,42 @@ class UserService extends AbstractBaseService
      */
     public function update(User $user, array $data)
     {
-        // @ToDo implement this method
+        if ($data['locality']) {
+            if (!$locality = $this->localityRepository->find($data['locality'])) {
+                throw new NotFoundHttpException(
+                    "Locality with id {$data['locality']} not found");
+            }
+            $data['locality'] = $locality;
+        }
+        if ($data['roles']) {
+            if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+                throw new AccessDeniedHttpException('You can\'t change user role');
+            }
+            $this->checkRolesData($data['roles']);
+        }
+        if (isset($data['enabled'])) {
+            if (!in_array('ROLE_ADMIN', $user->getRoles())) {
+                throw new AccessDeniedHttpException('You can\'t enable or disable user');
+            }
+        }
+        $user->fromArray($data);
+
+        return $this->save($user);
+    }
+
+    /**
+     * Gets query of users
+     *
+     * @return Query
+     */
+    public function getQuery(): Query
+    {
+        $qb = $this->getRepository()->createQueryBuilder('u');
+        $query = $qb->getQuery();
+
+        return $query->useResultCache(true)
+            ->useQueryCache(true)
+            ->setResultCacheId(User::NAMESPACE);
     }
 
     /**
@@ -90,21 +184,49 @@ class UserService extends AbstractBaseService
      * @param int $digits
      * @return int
      */
-    public function generateAuthCode(int $digits = 6): int
+    private function generateAuthCode(int $digits = 8): int
     {
         return rand(pow(10, $digits - 1), pow(10, $digits) - 1);
     }
 
     /**
-     * Gets encoded auth_code of an user
+     * Check user can update auth code
      *
      * @param User $user
-     * @return void
+     * @throws BadRequestHttpException
      */
-    public function encodeAuthCode(User $user)
+    private function checkUserCanUpdateAuthCode(User $user)
     {
-        $encoder = $this->encoderFactory->getEncoder($user);
-        $encodedCode = $encoder->encodePassword($user->getAuthCode(), $user->getSalt());
-        $user->setAuthCode($encodedCode);
+        $codeCanUpdateAt = $user
+            ->getAuthCodeUpdatedAt()
+            ->add(new \DateInterval('P' . User::CODE_UPDATED_LIMIT_HOURS . 'H'));
+
+        $now = new \DateTime();
+
+        if ($now < $codeCanUpdateAt) {
+            $timeNeedWait = $now
+                ->diff($codeCanUpdateAt)
+                ->format('%d days, %h hours, %i minutes');
+            throw new BadRequestHttpException(
+                'You can not update your code so frequently, please, wait ' . $timeNeedWait);
+        }
+    }
+
+    /**
+     * Check roles data
+     *
+     * @param array $roles
+     * @throws BadRequestHttpException
+     */
+    private function checkRolesData(array $roles)
+    {
+        foreach ($roles as $role) {
+            if (!is_string($role)) {
+                throw new BadRequestHttpException('Each role must be a string');
+            }
+        }
+        if ($roles !== array_intersect(array_keys($this->usersRoles), $roles)) {
+            throw new BadRequestHttpException('Incorrect roles array');
+        }
     }
 }

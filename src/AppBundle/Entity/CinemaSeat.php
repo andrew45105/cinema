@@ -93,7 +93,7 @@ class CinemaSeat extends AbstractBaseEntity
     }
 
     /**
-     * Set seatNumber
+     * Set seat number
      *
      * @param string $seatNumber
      *
@@ -107,7 +107,7 @@ class CinemaSeat extends AbstractBaseEntity
     }
 
     /**
-     * Get seatNumber
+     * Get seat number
      *
      * @return string
      */

@@ -25,6 +25,7 @@ class User extends AbstractBaseEntity implements UserInterface
 
     const NAMESPACE = 'users';
     const LIMIT = 10;
+    const CODE_UPDATED_LIMIT_HOURS = 24;
 
     /**
      * @var int
@@ -55,6 +56,14 @@ class User extends AbstractBaseEntity implements UserInterface
     private $authCode;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="auth_code_updated_at", type="datetime")
+     * @Assert\NotBlank()
+     */
+    private $authCodeUpdatedAt;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="salt", type="string", length=255)
@@ -64,7 +73,7 @@ class User extends AbstractBaseEntity implements UserInterface
     /**
      * @var array
      *
-     * @ORM\Column(name="links", type="json_array")
+     * @ORM\Column(name="roles", type="json_array")
      * @Groups({"Default"})
      */
     private $roles;
@@ -125,11 +134,12 @@ class User extends AbstractBaseEntity implements UserInterface
      */
     public function __construct(array $data = [])
     {
+        $this->authCodeUpdatedAt = new \DateTime();
+        $this->salt = md5(uniqid(null, true));
         $this->roles = ['ROLE_USER'];
         $this->cinemasManagers = new ArrayCollection();
         $this->orders = new ArrayCollection();
         $this->enabled = false;
-        $this->salt = md5(uniqid(null, true));
 
         parent::__construct($data);
     }
@@ -145,6 +155,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Get phone
+     *
      * @return string
      */
     public function getPhone(): string
@@ -153,6 +165,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Set phone
+     *
      * @param string $phone
      *
      * @return User
@@ -165,6 +179,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Get auth code
+     *
      * @return string
      */
     public function getAuthCode(): string
@@ -173,6 +189,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Set auth code
+     *
      * @param string $authCode
      *
      * @return User
@@ -185,6 +203,32 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Get auth code updated at
+     *
+     * @return \DateTime
+     */
+    public function getAuthCodeUpdatedAt(): \DateTime
+    {
+        return $this->authCodeUpdatedAt;
+    }
+
+    /**
+     * Set auth code updated at
+     *
+     * @param \DateTime $authCodeUpdatedAt
+     *
+     * @return User
+     */
+    public function setAuthCodeUpdatedAt(\DateTime $authCodeUpdatedAt)
+    {
+        $this->authCodeUpdatedAt = $authCodeUpdatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get roles
+     *
      * @return array
      */
     public function getRoles()
@@ -193,6 +237,22 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Set roles
+     *
+     * @param array $roles
+     *
+     * @return User
+     */
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * Add role
+     *
      * @param string $role
      *
      * @return User
@@ -207,6 +267,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Remove role
+     *
      * @param string $role
      *
      * @return User
@@ -222,6 +284,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Get first name
+     *
      * @return string|null
      */
     public function getFirstName(): ?string
@@ -230,6 +294,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Set first name
+     *
      * @param string|null $firstName
      *
      * @return User
@@ -242,6 +308,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Get last name
+     *
      * @return string|null
      */
     public function getLastName(): ?string
@@ -250,6 +318,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Set last name
+     *
      * @param string|null $lastName
      *
      * @return User
@@ -262,6 +332,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Get locality
+     *
      * @return Locality|null
      */
     public function getLocality(): ?Locality
@@ -270,6 +342,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Set locality
+     *
      * @param Locality|null $locality
      *
      * @return User
@@ -282,6 +356,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Get cinemas seats
+     *
      * @return Collection
      */
     public function getCinemasManagers(): Collection
@@ -290,6 +366,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Add cinema manager
+     *
      * @param CinemaManager $cinemaManager
      *
      * @return User
@@ -304,6 +382,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Remove cinema manager
+     *
      * @param CinemaManager $cinemaManager
      *
      * @return User
@@ -318,6 +398,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Get orders
+     *
      * @return Collection
      */
     public function getOrders(): Collection
@@ -326,6 +408,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Add order
+     *
      * @param UserOrder $order
      *
      * @return User
@@ -340,6 +424,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Remove order
+     *
      * @param UserOrder $order
      *
      * @return User
@@ -354,6 +440,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Is enabled
+     *
      * @return bool
      */
     public function isEnabled(): bool
@@ -362,6 +450,8 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
+     * Set enabled
+     *
      * @param bool $enabled
      *
      * @return User

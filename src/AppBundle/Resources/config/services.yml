@@ -5,6 +5,14 @@ services:
         class: AppBundle\Security\JwtAuthenticator
         arguments: ['@doctrine.orm.entity_manager', '@lexik_jwt_authentication.encoder']
 
+    # Listeners Doctrine
+    app.listener.doctrine.user:
+        class: AppBundle\EventListener\Doctrine\UserListener
+        calls:
+            - [setEncoderFactory, ['@security.encoder_factory']]
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+
     #Normalizers
     app.normalizer.exception:
         class: AppBundle\Serializer\Normalizer\ExceptionNormalizer
@@ -85,8 +93,9 @@ services:
     app.service.entity.user:
         class: AppBundle\Service\Entity\UserService
         arguments:
-            - "@security.encoder_factory"
-            - "@app.service.sms"
             - "@validator"
+            - "%security.role_hierarchy.roles%"
         calls:
             - [setRepository, ['@app.repository.user']]
+            - [setSmsService, ['@app.service.sms']]
+            - [setLocalityRepository, ['@app.repository.locality']]

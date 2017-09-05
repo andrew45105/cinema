@@ -12,14 +12,9 @@ use Twilio\Rest\Client;
 class SmsService
 {
     /**
-     * @var string
+     * @var Client
      */
-    private $accountId;
-
-    /**
-     * @var string
-     */
-    private $authToken;
+    private $twilioClient;
 
     /**
      * @var string
@@ -41,8 +36,10 @@ class SmsService
         array $twilio,
         string $projectName)
     {
-        $this->accountId = $twilio['account_id'];
-        $this->authToken = $twilio['auth_token'];
+        $this->twilioClient = new Client(
+            $twilio['account_id'],
+            $twilio['auth_token']
+        );
         $this->senderPhone = $twilio['sender_phone'];
         $this->projectName = $projectName;
     }
@@ -56,8 +53,7 @@ class SmsService
      */
     public function send(string $subscriberPhone, string $rawAuthCode)
     {
-        $client = new Client($this->accountId, $this->authToken);
-        $client->messages->create(
+        $this->twilioClient->messages->create(
             $subscriberPhone,
             [
                 'from' => $this->senderPhone,

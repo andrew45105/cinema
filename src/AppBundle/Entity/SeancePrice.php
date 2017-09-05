@@ -80,7 +80,7 @@ class SeancePrice extends AbstractBaseEntity
     }
 
     /**
-     * Set spectatorType
+     * Set spectator type
      *
      * @param string $spectatorType
      *
@@ -94,7 +94,7 @@ class SeancePrice extends AbstractBaseEntity
     }
 
     /**
-     * Get spectatorType
+     * Get spectator type
      *
      * @return string
      */

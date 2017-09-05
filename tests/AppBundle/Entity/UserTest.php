@@ -81,6 +81,23 @@ class UserTest extends BaseTestCase
     }
 
     /**
+     * Tests set and get auth code updated at
+     *
+     * @covers \AppBundle\Entity\User::setAuthCodeUpdatedAt()
+     * @covers \AppBundle\Entity\User::getAuthCodeUpdatedAt()
+     */
+    public function testSetGetAuthCodeUpdatedAt()
+    {
+        $dateTime = (new \DateTime())->modify('-1 day');
+        self::assertInstanceOf(\DateTime::class, $this->user->getAuthCodeUpdatedAt());
+        self::assertInstanceOf(User::class, $this->user->setAuthCodeUpdatedAt($dateTime));
+        self::assertEquals(
+            $this->user->getAuthCodeUpdatedAt()->getTimestamp(),
+            $dateTime->getTimestamp()
+        );
+    }
+
+    /**
      * Tests get roles
      *
      * @covers \AppBundle\Entity\User::getRoles()
