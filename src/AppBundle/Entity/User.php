@@ -25,7 +25,7 @@ class User extends AbstractBaseEntity implements UserInterface
 
     const NAMESPACE = 'users';
     const LIMIT = 10;
-    const CODE_UPDATED_LIMIT_HOURS = 24;
+    const CONFIRM_CODE_LIMIT_MINUTES = 3;
 
     /**
      * @var int
@@ -40,9 +40,26 @@ class User extends AbstractBaseEntity implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="phone", type="string", length=35, unique=true)
+     * @ORM\Column(name="username", type="string", length=64, unique=true)
      * @Groups({"default"})
      * @Assert\NotBlank()
+     */
+    private $username;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="password", type="string", length=64)
+     * @Groups({"default"})
+     * @Assert\NotBlank()
+     */
+    private $password;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="phone", type="string", length=35, nullable=true)
+     * @Groups({"default"})
      * @Assert\Regex(pattern= "/^\+?[\d]+$/")
      */
     private $phone;
@@ -50,18 +67,16 @@ class User extends AbstractBaseEntity implements UserInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="auth_code", type="string")
-     * @Assert\NotBlank()
+     * @ORM\Column(name="confirm_code", type="string", nullable=true)
      */
-    private $authCode;
+    private $confirmCode;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="auth_code_updated_at", type="datetime")
-     * @Assert\NotBlank()
+     * @ORM\Column(name="confirm_code_created_at", type="datetime", nullable=true)
      */
-    private $authCodeUpdatedAt;
+    private $confirmCodeCreatedAt;
 
     /**
      * @var string
@@ -128,18 +143,26 @@ class User extends AbstractBaseEntity implements UserInterface
     private $enabled;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="confirmed", type="boolean")
+     * @Groups({"default"})
+     */
+    private $confirmed;
+
+    /**
      * User constructor.
      *
      * @param array $data
      */
     public function __construct(array $data = [])
     {
-        $this->authCodeUpdatedAt = new \DateTime();
         $this->salt = md5(uniqid(null, true));
         $this->roles = ['ROLE_USER'];
         $this->cinemasManagers = new ArrayCollection();
         $this->orders = new ArrayCollection();
         $this->enabled = false;
+        $this->confirmed = false;
 
         parent::__construct($data);
     }
@@ -155,11 +178,59 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
-     * Get phone
+     * Get username
      *
      * @return string
      */
-    public function getPhone(): string
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    /**
+     * Set username
+     *
+     * @param string $username
+     *
+     * @return User
+     */
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string
+     */
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $password
+     *
+     * @return User
+     */
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get phone
+     *
+     * @return string|null
+     */
+    public function getPhone(): ?string
     {
         return $this->phone;
     }
@@ -167,11 +238,11 @@ class User extends AbstractBaseEntity implements UserInterface
     /**
      * Set phone
      *
-     * @param string $phone
+     * @param string|null $phone
      *
      * @return User
      */
-    public function setPhone(string $phone): self
+    public function setPhone(string $phone = null): self
     {
         $this->phone = $phone;
 
@@ -179,49 +250,49 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
-     * Get auth code
+     * Get confirm code
      *
-     * @return string
+     * @return string|null
      */
-    public function getAuthCode(): string
+    public function getConfirmCode(): ?string
     {
-        return $this->authCode;
+        return $this->confirmCode;
     }
 
     /**
-     * Set auth code
+     * Set confirm code
      *
-     * @param string $authCode
+     * @param string|null $confirmCode
      *
      * @return User
      */
-    public function setAuthCode(string $authCode): self
+    public function setConfirmCode(string $confirmCode = null): self
     {
-        $this->authCode = $authCode;
+        $this->confirmCode = $confirmCode;
 
         return $this;
     }
 
     /**
-     * Get auth code updated at
+     * Get confirm code created at
      *
-     * @return \DateTime
+     * @return \DateTime|null
      */
-    public function getAuthCodeUpdatedAt(): \DateTime
+    public function getConfirmCodeCreatedAt(): ?\DateTime
     {
-        return $this->authCodeUpdatedAt;
+        return $this->confirmCodeCreatedAt;
     }
 
     /**
-     * Set auth code updated at
+     * Set confirm code created at
      *
-     * @param \DateTime $authCodeUpdatedAt
+     * @param \DateTime|null $confirmCodeCreatedAt
      *
      * @return User
      */
-    public function setAuthCodeUpdatedAt(\DateTime $authCodeUpdatedAt)
+    public function setConfirmCodeCreatedAt(\DateTime $confirmCodeCreatedAt = null)
     {
-        $this->authCodeUpdatedAt = $authCodeUpdatedAt;
+        $this->confirmCodeCreatedAt = $confirmCodeCreatedAt;
 
         return $this;
     }
@@ -464,11 +535,27 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
-     * {@inheritDoc}
-     * @codeCoverageIgnore
+     * Is confirmed
+     *
+     * @return bool
      */
-    public function getPassword()
+    public function isConfirmed(): bool
     {
+        return $this->confirmed;
+    }
+
+    /**
+     * Set confirmed
+     *
+     * @param bool $confirmed
+     *
+     * @return User
+     */
+    public function setConfirmed(bool $confirmed): self
+    {
+        $this->confirmed = $confirmed;
+
+        return $this;
     }
 
     /**
@@ -478,15 +565,6 @@ class User extends AbstractBaseEntity implements UserInterface
     public function getSalt()
     {
         return $this->salt;
-    }
-
-    /**
-     * {@inheritDoc}
-     * @codeCoverageIgnore
-     */
-    public function getUsername()
-    {
-        return null;
     }
 
     /**

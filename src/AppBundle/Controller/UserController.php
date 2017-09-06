@@ -24,9 +24,12 @@ class UserController extends FOSRestController
      * )
      *
      * @Rest\Post("/users", name="post_user")
-     * @Rest\RequestParam(name="phone", requirements="\+?[\d]+", description="phone")
+     * @Rest\RequestParam(name="username", description="username")
+     * @Rest\RequestParam(name="password", description="password")
+     * @Rest\RequestParam(name="phone", strict=false, requirements="\+?[\d]+", description="phone")
      * @Rest\RequestParam(name="firstName", strict=false, description="first name")
      * @Rest\RequestParam(name="lastName", strict=false, description="last name")
+     * @Rest\RequestParam(name="locality", strict=false, requirements="\d+", description="locality id")
      * @param ParamFetcherInterface $paramFetcher
      * @View(serializerGroups={"default", "locality"})
      * @return User
@@ -88,8 +91,6 @@ class UserController extends FOSRestController
      *  description="Get current user"
      * )
      *
-     * @Security("user == targetUser")
-     *
      * @Rest\Get("/users/me", name="get_me_user")
      * @View(serializerGroups={"default", "locality", "managers", "orders"})
      * @return User
@@ -102,20 +103,37 @@ class UserController extends FOSRestController
     /**
      * @ApiDoc(
      *  section="user",
-     *  description="Create new auth code for user"
+     *  description="Create confirm code for user"
      * )
      *
      * @Rest\Post("/users/code", name="post_user_code")
-     * @Rest\RequestParam(name="phone", requirements="\+?[\d]+", description="phone")
+     * @View(serializerGroups={"default", "locality"})
+     * @return User
+     */
+    public function postUserCodeAction(): User
+    {
+        return $this
+            ->get('app.service.entity.user')
+            ->createConfirmCode($this->getUser());
+    }
+
+    /**
+     * @ApiDoc(
+     *  section="user",
+     *  description="Confirm user"
+     * )
+     *
+     * @Rest\Post("/users/confirm", name="confirm_user")
+     * @Rest\RequestParam(name="confirmCode", description="confirmation code")
      * @param ParamFetcherInterface $paramFetcher
      * @View(serializerGroups={"default", "locality"})
      * @return User
      */
-    public function postUserCodeAction(ParamFetcherInterface $paramFetcher): User
+    public function postConfirmUserAction(ParamFetcherInterface $paramFetcher): User
     {
         return $this
             ->get('app.service.entity.user')
-            ->createAuthCode($paramFetcher->get('phone'));
+            ->confirm($this->getUser(), $paramFetcher->get('confirmCode'));
     }
 
     /**
@@ -127,11 +145,15 @@ class UserController extends FOSRestController
      * @Security("user == targetUser || has_role('ROLE_ADMIN')")
      *
      * @Rest\Patch("/users", name="patch_user")
+     * @Rest\RequestParam(name="username", strict=false, description="username")
+     * @Rest\RequestParam(name="password", strict=false, description="password")
+     * @Rest\RequestParam(name="phone", strict=false, requirements="\+?[\d]+", description="phone")
      * @Rest\RequestParam(name="locality", strict=false, requirements="\d+", description="locality id")
      * @Rest\RequestParam(name="firstName", strict=false, description="first name")
      * @Rest\RequestParam(name="lastName", strict=false, description="last name")
      * @Rest\RequestParam(name="roles", map=true, strict=false, description="list of roles")
      * @Rest\RequestParam(name="enabled", strict=false, requirements="(0|1)", description="enable or disable user")
+     * @Rest\RequestParam(name="confirmed", strict=false, requirements="(0|1)", description="confirm or not user")
      * @param ParamFetcherInterface $paramFetcher
      * @View(serializerGroups={"default", "locality"})
      * @return User

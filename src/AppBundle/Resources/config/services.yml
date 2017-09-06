@@ -1,10 +1,5 @@
 services:
 
-    #Authentication
-    app.jwt_token_authenticator:
-        class: AppBundle\Security\JwtAuthenticator
-        arguments: ['@doctrine.orm.entity_manager', '@lexik_jwt_authentication.encoder']
-
     # Listeners Doctrine
     app.listener.doctrine.user:
         class: AppBundle\EventListener\Doctrine\UserListener
@@ -76,13 +71,6 @@ services:
             - AppBundle\Entity\UserOrder
 
     #Services
-    app.service.token:
-        class: AppBundle\Service\TokenService
-        arguments:
-          - "@app.repository.user"
-          - "@security.encoder_factory"
-          - "@lexik_jwt_authentication.encoder"
-
     app.service.sms:
         class: AppBundle\Service\SmsService
         arguments:

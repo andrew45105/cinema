@@ -55,6 +55,32 @@ class UserTest extends BaseTestCase
     }
 
     /**
+     * Tests set and get username
+     *
+     * @covers \AppBundle\Entity\User::setUsername()
+     * @covers \AppBundle\Entity\User::getUsername()
+     */
+    public function testSetGetUsername()
+    {
+        $username = 'Andrew';
+        self::assertInstanceOf(User::class, $this->user->setUsername($username));
+        self::assertEquals($this->user->getUsername(), $username);
+    }
+
+    /**
+     * Tests set and get password
+     *
+     * @covers \AppBundle\Entity\User::setPassword()
+     * @covers \AppBundle\Entity\User::getPassword()
+     */
+    public function testSetGetPassword()
+    {
+        $password = 'abcd123';
+        self::assertInstanceOf(User::class, $this->user->setPassword($password));
+        self::assertEquals($this->user->getPassword(), $password);
+    }
+
+    /**
      * Tests set and get phone
      *
      * @covers \AppBundle\Entity\User::setPhone()
@@ -68,33 +94,43 @@ class UserTest extends BaseTestCase
     }
 
     /**
-     * Tests set and get auth code
+     * Tests set and get confirm code
      *
-     * @covers \AppBundle\Entity\User::setAuthCode()
-     * @covers \AppBundle\Entity\User::getAuthCode()
+     * @covers \AppBundle\Entity\User::setConfirmCode()
+     * @covers \AppBundle\Entity\User::getConfirmCode()
      */
-    public function testSetGetAuthCode()
+    public function testSetGetConfirmCode()
     {
-        $authCode = 'some code';
-        self::assertInstanceOf(User::class, $this->user->setAuthCode($authCode));
-        self::assertEquals($this->user->getAuthCode(), $authCode);
+        $confirmCode = 'some code';
+        self::assertInstanceOf(User::class, $this->user->setConfirmCode($confirmCode));
+        self::assertEquals($this->user->getConfirmCode(), $confirmCode);
     }
 
     /**
-     * Tests set and get auth code updated at
+     * Tests set and get confirm code created at
      *
-     * @covers \AppBundle\Entity\User::setAuthCodeUpdatedAt()
-     * @covers \AppBundle\Entity\User::getAuthCodeUpdatedAt()
+     * @covers \AppBundle\Entity\User::setConfirmCodeCreatedAt()
+     * @covers \AppBundle\Entity\User::getConfirmCodeCreatedAt()
      */
-    public function testSetGetAuthCodeUpdatedAt()
+    public function testSetGetConfirmCodeCreatedAt()
     {
         $dateTime = (new \DateTime())->modify('-1 day');
-        self::assertInstanceOf(\DateTime::class, $this->user->getAuthCodeUpdatedAt());
-        self::assertInstanceOf(User::class, $this->user->setAuthCodeUpdatedAt($dateTime));
+        self::assertNull($this->user->getConfirmCodeCreatedAt());
+        self::assertInstanceOf(User::class, $this->user->setConfirmCodeCreatedAt($dateTime));
         self::assertEquals(
-            $this->user->getAuthCodeUpdatedAt()->getTimestamp(),
+            $this->user->getConfirmCodeCreatedAt()->getTimestamp(),
             $dateTime->getTimestamp()
         );
+    }
+
+    /**
+     * Tests get salt
+     *
+     * @covers \AppBundle\Entity\User::getSalt()
+     */
+    public function testGetSalt()
+    {
+        self::assertInstanceOf('string', $this->user->getSalt());
     }
 
     /**
@@ -104,6 +140,8 @@ class UserTest extends BaseTestCase
      */
     public function testGetRoles()
     {
+        self::assertInstanceOf('array', $this->user->getRoles());
+        self::assertCount(1, $this->user->getRoles());
         self::assertEquals('ROLE_USER', $this->user->getRoles()[0]);
     }
 
@@ -264,5 +302,18 @@ class UserTest extends BaseTestCase
         self::assertFalse($this->user->isEnabled());
         self::assertInstanceOf(User::class, $this->user->setEnabled(true));
         self::assertTrue($this->user->isEnabled());
+    }
+
+    /**
+     * Tests set and is confirmed
+     *
+     * @covers \AppBundle\Entity\User::setConfirmed()
+     * @covers \AppBundle\Entity\User::isConfirmed()
+     */
+    public function testSetIsConfirmed()
+    {
+        self::assertFalse($this->user->isConfirmed());
+        self::assertInstanceOf(User::class, $this->user->setConfirmed(true));
+        self::assertTrue($this->user->isConfirmed());
     }
 }

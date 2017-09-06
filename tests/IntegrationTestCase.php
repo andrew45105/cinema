@@ -37,19 +37,19 @@ abstract class IntegrationTestCase extends BaseTestCase
     /**
      * Gets authenticated http client
      *
-     * @param string $phone
+     * @param string|null $username
      * @return \Symfony\Bundle\FrameworkBundle\Client
      */
-    public function getAuthenticatedClient(string $phone = null)
+    public function getAuthenticatedClient(string $username = null)
     {
         $client = self::createClient();
 
-        $phone = $phone ?? '+1111';
-        $authCode = $this->getContainer()->getParameter('test_users_auth_code');
+        $username = $username ?? 'mike';
+        $password = $this->getContainer()->getParameter('test_users_password');
 
         $data = [
-            'phone' => $phone,
-            'auth_code' => $authCode,
+            'username' => $username,
+            'password' => $password,
         ];
 
         $client->request('POST', '/api/v1.1/token', $data);

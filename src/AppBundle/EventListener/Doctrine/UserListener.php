@@ -36,7 +36,8 @@ class UserListener
         if (!$entity instanceof User) {
             return;
         }
-        $this->encodeAuthCode($entity);
+        /* encode plain password */
+        $this->encodeField($entity, 'password');
     }
 
     /**
@@ -44,21 +45,32 @@ class UserListener
      */
     public function preUpdate(PreUpdateEventArgs $event)
     {
-        if ($event->hasChangedField('authCode')) {
-            $event->setNewValue('authCodeUpdatedAt', new \DateTime());
+        $entity = $event->getEntity();
+        if (!$entity instanceof User) {
+            return;
+        }
+
+        /* update confirmCodeCreatedAt field */
+        if ($event->hasChangedField('confirmCode')) {
+            $this->encodeField($entity, 'confirmCode');
+            $event->setNewValue('confirmCodeCreatedAt', new \DateTime());
         }
     }
 
     /**
-     * Gets encoded auth_code of an user
+     * Encode some field's data of an user
      *
      * @param User $user
+     * @param string $fieldToEncode
      * @return void
      */
-    private function encodeAuthCode(User $user)
+    private function encodeField(User $user, string $fieldToEncode)
     {
         $encoder = $this->encoderFactory->getEncoder($user);
-        $encodedCode = $encoder->encodePassword($user->getAuthCode(), $user->getSalt());
-        $user->setAuthCode($encodedCode);
+        /**
+         * @ToDo add reflection
+         */
+        //$encodedField = $encoder->encodePassword($user->getPassword(), $user->getSalt());
+        //$user->setPassword($encodedPassword);
     }
 }

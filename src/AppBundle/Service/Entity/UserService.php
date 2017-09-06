@@ -85,50 +85,59 @@ class UserService extends AbstractBaseService
      * @return User
      * @throws ConflictHttpException
      */
-    public function create(array $data)
+    public function create(array $data): User
     {
-        if ($this->getRepository()->findOneBy(['phone' => $data['phone']])) {
+        if ($this->getRepository()->findOneBy(['username' => $data['username']])) {
             throw new ConflictHttpException(
-                "User with phone '{$data['phone']}'' already exists");
+                "User with username '{$data['username']}'' already exists");
         }
+
+        $this->prepareUserData($data);
 
         $user = new User($data);
         $user->setEnabled(true);
-        $rawAuthCode = $this->generateAuthCode();
-        $user->setAuthCode($rawAuthCode);
-
-        /**
-         * @ToDo Sending auth code to user phone (remove this stub on production)
-         */
-        //$this->smsService->send($user->getPhone(), $rawAuthCode);
 
         return $this->save($user);
     }
 
     /**
-     * Creates new auth code for existing user
+     * Creates confirm code for user
      *
-     * @param string $phone
+     * @param User $user
      * @return User
      */
-    public function createAuthCode(string $phone)
+    public function createConfirmCode(User $user): User
     {
-        if (!$user = $this->getRepository()->findOneBy(['phone' => $phone])) {
-            throw new ConflictHttpException(
-                "User with phone '{$phone}' does not exists");
+        if (!$user->getPhone()) {
+            throw new BadRequestHttpException('User must have a phone number');
         }
 
-        $this->checkUserCanUpdateAuthCode($user);
-
-        $rawAuthCode = $this->generateAuthCode();
-        $user->setAuthCode($rawAuthCode);
+        $confirmCode = $this->generateConfirmCode();
+        $user->setConfirmCode($confirmCode);
 
         /**
-         * @ToDo Sending auth code to user phone (remove this stub on production)
+         * @ToDo Sending confirm code to user phone (remove this stub on production)
          */
-        //$this->smsService->send($user->getPhone(), $rawAuthCode);
+        //$this->smsService->send($user->getPhone(), $confirmCode);
 
         return $this->save($user);
+    }
+
+    /**
+     * Confirms user
+     *
+     * @param User $user
+     * @param string $confirmCode
+     * @return User
+     */
+    public function confirm(User $user, string $confirmCode): User
+    {
+        $this->checkUserCanBeConfirmed($user);
+
+        if ($this->isValidConfirmCode($user, $confirmCode)) {
+            $user->setConfirmed(true);
+        }
+        return $user;
     }
 
     /**
@@ -140,13 +149,8 @@ class UserService extends AbstractBaseService
      */
     public function update(User $user, array $data)
     {
-        if ($data['locality']) {
-            if (!$locality = $this->localityRepository->find($data['locality'])) {
-                throw new NotFoundHttpException(
-                    "Locality with id {$data['locality']} not found");
-            }
-            $data['locality'] = $locality;
-        }
+        $this->prepareUserData($data);
+
         if ($data['roles']) {
             if (!in_array('ROLE_ADMIN', $user->getRoles())) {
                 throw new AccessDeniedHttpException('You can\'t change user role');
@@ -161,6 +165,21 @@ class UserService extends AbstractBaseService
         $user->fromArray($data);
 
         return $this->save($user);
+    }
+
+    /**
+     * Validates confirm code
+     *
+     * @param User $user
+     * @param $confirmCode
+     * @return bool
+     */
+    public function isValidConfirmCode(User $user, string $confirmCode): bool
+    {
+        $encoder = $this->encoderFactory->getEncoder($user);
+        $result = $encoder->isPasswordValid($user->getConfirmCode(), $confirmCode, $user->getSalt());
+
+        return $result;
     }
 
     /**
@@ -179,36 +198,51 @@ class UserService extends AbstractBaseService
     }
 
     /**
-     * Generates auth code
+     * Generates confirm code
      *
      * @param int $digits
      * @return int
      */
-    private function generateAuthCode(int $digits = 8): int
+    private function generateConfirmCode(int $digits = 8): int
     {
         return rand(pow(10, $digits - 1), pow(10, $digits) - 1);
     }
 
     /**
-     * Check user can update auth code
+     * Prepare user data
+     *
+     * @param array $data
+     */
+    private function prepareUserData(array &$data)
+    {
+        if ($data['locality']) {
+            if (!$locality = $this->localityRepository->find($data['locality'])) {
+                throw new NotFoundHttpException(
+                    "Locality with id {$data['locality']} not found");
+            }
+            $data['locality'] = $locality;
+        }
+    }
+
+    /**
+     * Check user can be confirmed
      *
      * @param User $user
-     * @throws BadRequestHttpException
+     * @throws AccessDeniedHttpException
      */
-    private function checkUserCanUpdateAuthCode(User $user)
+    private function checkUserCanBeConfirmed(User $user)
     {
-        $codeCanUpdateAt = $user
-            ->getAuthCodeUpdatedAt()
-            ->add(new \DateInterval('P' . User::CODE_UPDATED_LIMIT_HOURS . 'H'));
+        $confirmTime = User::CONFIRM_CODE_LIMIT_MINUTES;
+
+        $userCanConfirmAt = $user
+            ->getConfirmCodeCreatedAt()
+            ->add(new \DateInterval("PT{$confirmTime}M"));
 
         $now = new \DateTime();
 
-        if ($now < $codeCanUpdateAt) {
-            $timeNeedWait = $now
-                ->diff($codeCanUpdateAt)
-                ->format('%d days, %h hours, %i minutes');
-            throw new BadRequestHttpException(
-                'You can not update your code so frequently, please, wait ' . $timeNeedWait);
+        if ($now > $userCanConfirmAt) {
+            throw new AccessDeniedHttpException(
+                "Confirmation time ({$confirmTime} minutes) is over");
         }
     }
 

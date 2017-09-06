@@ -14,26 +14,15 @@ security:
         user_provider:
             entity:
                 class: AppBundle:User
-                property: phone
 
     firewalls:
-        api:
-            pattern:   ^/api
-            stateless: true
-            anonymous: true
-            form_login:
-                check_path:               post_token
-                success_handler:          lexik_jwt_authentication.handler.authentication_success
-                failure_handler:          lexik_jwt_authentication.handler.authentication_failure
-                require_previous_session: false
-            guard:
-                authenticators:
-                    - lexik_jwt_authentication.jwt_token_authenticator
+        dev:
+            pattern: ^/(_(profiler|wdt|error)|css|images|js)/
+            security: false
 
     access_control:
         - { path: ^/api/doc, methods: [GET], roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v(.*)/users/code, methods: [POST], roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v(.*)/users, methods: [POST], roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v(.*)/auth, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v(.*)/*, roles: ROLE_USER }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }

@@ -17,8 +17,7 @@ class LoadUserData extends AbstractBaseFixture
      */
     protected function doLoad(ObjectManager $manager): void
     {
-        $authCode = $this->container->getParameter('test_users_auth_code');
-        $userService = $this->container->get('app.service.entity.user');
+        $authCode = $this->container->getParameter('test_users_password');
 
         $users = [
             new User([
@@ -61,7 +60,7 @@ class LoadUserData extends AbstractBaseFixture
 
         foreach ($users as $user) {
             $manager->persist($user);
-            $this->addReference('user_' . $user->getPhone(), $user);
+            $this->addReference($user->getUsername(), $user);
         }
 
         $manager->flush();
@@ -80,6 +79,6 @@ class LoadUserData extends AbstractBaseFixture
      */
     public function getOrder()
     {
-        return 8;
+        return 9;
     }
 }

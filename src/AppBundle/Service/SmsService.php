@@ -45,22 +45,22 @@ class SmsService
     }
 
     /**
-     * Send SMS to user with auth code
+     * Send SMS to user with confirm code
      *
      * @param string $subscriberPhone
-     * @param string $rawAuthCode
+     * @param string $confirmCode
      * @return void
      */
-    public function send(string $subscriberPhone, string $rawAuthCode)
+    public function send(string $subscriberPhone, string $confirmCode)
     {
         $this->twilioClient->messages->create(
             $subscriberPhone,
             [
                 'from' => $this->senderPhone,
                 'body' => sprintf(
-                    'Your authentication code for %s is %s',
+                    'Your confirmation code for %s is %s',
                     $this->projectName,
-                    $rawAuthCode
+                    $confirmCode
                 ),
             ]
         );

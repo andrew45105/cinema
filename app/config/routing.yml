@@ -6,12 +6,6 @@ api:
     requirements:
         version: '^[1-9]+\.[0-9]+'
 
-post_token:
-    path: "/api/v{version}/token"
-    defaults: {version: 1.1}
-    requirements:
-        version: '^[1-9]+\.[0-9]+'
-
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
