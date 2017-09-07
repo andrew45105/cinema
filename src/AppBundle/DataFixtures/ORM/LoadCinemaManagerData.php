@@ -17,8 +17,8 @@ class LoadCinemaManagerData extends AbstractBaseFixture
      */
     protected function doLoad(ObjectManager $manager): void
     {
-        $manager1 = $this->getReference('user_+3333');
-        $manager2 = $this->getReference('user_+4444');
+        $manager1 = $this->getReference('miguel');
+        $manager2 = $this->getReference('user4');
 
         $cinemasManagers = [
             new CinemaManager([

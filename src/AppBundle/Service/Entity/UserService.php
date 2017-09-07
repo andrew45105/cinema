@@ -129,6 +129,7 @@ class UserService extends AbstractBaseService
      * @param User $user
      * @param string $confirmCode
      * @return User
+     * @throws BadRequestHttpException
      */
     public function confirm(User $user, string $confirmCode): User
     {
@@ -136,6 +137,9 @@ class UserService extends AbstractBaseService
 
         if ($this->isValidConfirmCode($user, $confirmCode)) {
             $user->setConfirmed(true);
+        } else {
+            throw new BadRequestHttpException(
+                "Invalid confirmation code - {$confirmCode}");
         }
         return $user;
     }
@@ -150,18 +154,6 @@ class UserService extends AbstractBaseService
     public function update(User $user, array $data)
     {
         $this->prepareUserData($data);
-
-        if ($data['roles']) {
-            if (!in_array('ROLE_ADMIN', $user->getRoles())) {
-                throw new AccessDeniedHttpException('You can\'t change user role');
-            }
-            $this->checkRolesData($data['roles']);
-        }
-        if (isset($data['enabled'])) {
-            if (!in_array('ROLE_ADMIN', $user->getRoles())) {
-                throw new AccessDeniedHttpException('You can\'t enable or disable user');
-            }
-        }
         $user->fromArray($data);
 
         return $this->save($user);
@@ -177,9 +169,11 @@ class UserService extends AbstractBaseService
     public function isValidConfirmCode(User $user, string $confirmCode): bool
     {
         $encoder = $this->encoderFactory->getEncoder($user);
-        $result = $encoder->isPasswordValid($user->getConfirmCode(), $confirmCode, $user->getSalt());
-
-        return $result;
+        return $encoder->isPasswordValid(
+            $user->getConfirmCode(),
+            $confirmCode,
+            $user->getSalt()
+        );
     }
 
     /**
@@ -203,7 +197,7 @@ class UserService extends AbstractBaseService
      * @param int $digits
      * @return int
      */
-    private function generateConfirmCode(int $digits = 8): int
+    private function generateConfirmCode(int $digits = 6): int
     {
         return rand(pow(10, $digits - 1), pow(10, $digits) - 1);
     }

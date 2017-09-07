@@ -4,7 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use RonteLtd\CommonBundle\Entity\AbstractBaseEntity;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -26,7 +26,7 @@ class UserOrder extends AbstractBaseEntity
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $id;
 
@@ -35,7 +35,7 @@ class UserOrder extends AbstractBaseEntity
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
-     * @Groups({"user"})
+     * @JMS\Groups({"user"})
      */
     private $user;
 
@@ -44,7 +44,7 @@ class UserOrder extends AbstractBaseEntity
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Seance")
      * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
-     * @Groups({"seance"})
+     * @JMS\Groups({"seance"})
      */
     private $seance;
 
@@ -53,7 +53,7 @@ class UserOrder extends AbstractBaseEntity
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\CinemaSeat")
      * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
-     * @Groups({"seat"})
+     * @JMS\Groups({"seat"})
      */
     private $cinemaSeat;
 
@@ -61,7 +61,7 @@ class UserOrder extends AbstractBaseEntity
      * @var string
      *
      * @ORM\Column(name="spectator_type", type="string", length=64)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $spectatorType;
@@ -70,7 +70,7 @@ class UserOrder extends AbstractBaseEntity
      * @var string
      *
      * @ORM\Column(name="status", type="string", length=64)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $status;
 

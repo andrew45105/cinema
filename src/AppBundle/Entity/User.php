@@ -10,7 +10,7 @@ use RonteLtd\CommonBundle\Entity\CreatedAtTrait;
 use RonteLtd\CommonBundle\Entity\UpdatedAtTrait;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * Class User
@@ -33,7 +33,7 @@ class User extends AbstractBaseEntity implements UserInterface
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     protected $id;
 
@@ -41,7 +41,7 @@ class User extends AbstractBaseEntity implements UserInterface
      * @var string
      *
      * @ORM\Column(name="username", type="string", length=64, unique=true)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $username;
@@ -50,7 +50,7 @@ class User extends AbstractBaseEntity implements UserInterface
      * @var string
      *
      * @ORM\Column(name="password", type="string", length=64)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $password;
@@ -59,7 +59,7 @@ class User extends AbstractBaseEntity implements UserInterface
      * @var string
      *
      * @ORM\Column(name="phone", type="string", length=35, nullable=true)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\Regex(pattern= "/^\+?[\d]+$/")
      */
     private $phone;
@@ -68,6 +68,7 @@ class User extends AbstractBaseEntity implements UserInterface
      * @var string
      *
      * @ORM\Column(name="confirm_code", type="string", nullable=true)
+     * @JMS\Groups({"default"})
      */
     private $confirmCode;
 
@@ -75,6 +76,7 @@ class User extends AbstractBaseEntity implements UserInterface
      * @var \DateTime
      *
      * @ORM\Column(name="confirm_code_created_at", type="datetime", nullable=true)
+     * @JMS\Groups({"default"})
      */
     private $confirmCodeCreatedAt;
 
@@ -89,7 +91,7 @@ class User extends AbstractBaseEntity implements UserInterface
      * @var array
      *
      * @ORM\Column(name="roles", type="json_array")
-     * @Groups({"Default"})
+     * @JMS\Groups({"default"})
      */
     private $roles;
 
@@ -97,7 +99,7 @@ class User extends AbstractBaseEntity implements UserInterface
      * @var string
      *
      * @ORM\Column(name="first_name", type="string", nullable=true)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $firstName;
 
@@ -105,7 +107,7 @@ class User extends AbstractBaseEntity implements UserInterface
      * @var string
      *
      * @ORM\Column(name="last_name", type="string", nullable=true)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $lastName;
 
@@ -114,7 +116,7 @@ class User extends AbstractBaseEntity implements UserInterface
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Locality")
      * @ORM\JoinColumn(nullable=true, onDelete="SET NULL")
-     * @Groups({"locality"})
+     * @JMS\Groups({"locality"})
      */
     private $locality;
 
@@ -122,7 +124,7 @@ class User extends AbstractBaseEntity implements UserInterface
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\CinemaManager", mappedBy="manager")
-     * @Groups({"managers"})
+     * @JMS\Groups({"managers"})
      */
     private $cinemasManagers;
 
@@ -130,25 +132,25 @@ class User extends AbstractBaseEntity implements UserInterface
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\UserOrder", mappedBy="user")
-     * @Groups({"orders"})
+     * @JMS\Groups({"orders"})
      */
     private $orders;
 
     /**
      * @var bool
      *
-     * @ORM\Column(name="enabled", type="boolean")
-     * @Groups({"default"})
+     * @ORM\Column(name="confirmed", type="boolean")
+     * @JMS\Groups({"default"})
      */
-    private $enabled;
+    private $confirmed;
 
     /**
      * @var bool
      *
-     * @ORM\Column(name="confirmed", type="boolean")
-     * @Groups({"default"})
+     * @ORM\Column(name="enabled", type="boolean")
+     * @JMS\Groups({"default"})
      */
-    private $confirmed;
+    private $enabled;
 
     /**
      * User constructor.
@@ -161,8 +163,8 @@ class User extends AbstractBaseEntity implements UserInterface
         $this->roles = ['ROLE_USER'];
         $this->cinemasManagers = new ArrayCollection();
         $this->orders = new ArrayCollection();
-        $this->enabled = false;
         $this->confirmed = false;
+        $this->enabled = false;
 
         parent::__construct($data);
     }
@@ -511,30 +513,6 @@ class User extends AbstractBaseEntity implements UserInterface
     }
 
     /**
-     * Is enabled
-     *
-     * @return bool
-     */
-    public function isEnabled(): bool
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * Set enabled
-     *
-     * @param bool $enabled
-     *
-     * @return User
-     */
-    public function setEnabled(bool $enabled): self
-    {
-        $this->enabled = $enabled;
-
-        return $this;
-    }
-
-    /**
      * Is confirmed
      *
      * @return bool
@@ -554,6 +532,30 @@ class User extends AbstractBaseEntity implements UserInterface
     public function setConfirmed(bool $confirmed): self
     {
         $this->confirmed = $confirmed;
+
+        return $this;
+    }
+
+    /**
+     * Is enabled
+     *
+     * @return bool
+     */
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * Set enabled
+     *
+     * @param bool $enabled
+     *
+     * @return User
+     */
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

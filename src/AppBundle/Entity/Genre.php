@@ -4,7 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use RonteLtd\CommonBundle\Entity\AbstractBaseEntity;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 use Gedmo\Mapping\Annotation as Gedmo;
 
@@ -22,7 +22,7 @@ class Genre extends AbstractBaseEntity
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $id;
 
@@ -30,7 +30,7 @@ class Genre extends AbstractBaseEntity
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=64, unique=true)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $title;
@@ -40,7 +40,7 @@ class Genre extends AbstractBaseEntity
      *
      * @Gedmo\Slug(fields={"title"}, updatable=false)
      * @ORM\Column(name="slug", type="string", length=64, unique=true)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $slug;
 

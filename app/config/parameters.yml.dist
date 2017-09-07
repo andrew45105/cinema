@@ -30,6 +30,7 @@ parameters:
     site_url: http://cinema.local
 
     test_users_password: abcd123
+    test_users_confirm_code: 123456
     locale: en
 
     twilio:

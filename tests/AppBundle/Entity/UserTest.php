@@ -130,7 +130,7 @@ class UserTest extends BaseTestCase
      */
     public function testGetSalt()
     {
-        self::assertInstanceOf('string', $this->user->getSalt());
+        self::assertInternalType('string', $this->user->getSalt());
     }
 
     /**
@@ -140,7 +140,7 @@ class UserTest extends BaseTestCase
      */
     public function testGetRoles()
     {
-        self::assertInstanceOf('array', $this->user->getRoles());
+        self::assertInternalType('array', $this->user->getRoles());
         self::assertCount(1, $this->user->getRoles());
         self::assertEquals('ROLE_USER', $this->user->getRoles()[0]);
     }
@@ -292,19 +292,6 @@ class UserTest extends BaseTestCase
     }
 
     /**
-     * Tests set and is enabled
-     *
-     * @covers \AppBundle\Entity\User::setEnabled()
-     * @covers \AppBundle\Entity\User::isEnabled()
-     */
-    public function testSetIsEnabled()
-    {
-        self::assertFalse($this->user->isEnabled());
-        self::assertInstanceOf(User::class, $this->user->setEnabled(true));
-        self::assertTrue($this->user->isEnabled());
-    }
-
-    /**
      * Tests set and is confirmed
      *
      * @covers \AppBundle\Entity\User::setConfirmed()
@@ -315,5 +302,18 @@ class UserTest extends BaseTestCase
         self::assertFalse($this->user->isConfirmed());
         self::assertInstanceOf(User::class, $this->user->setConfirmed(true));
         self::assertTrue($this->user->isConfirmed());
+    }
+
+    /**
+     * Tests set and is enabled
+     *
+     * @covers \AppBundle\Entity\User::setEnabled()
+     * @covers \AppBundle\Entity\User::isEnabled()
+     */
+    public function testSetIsEnabled()
+    {
+        self::assertFalse($this->user->isEnabled());
+        self::assertInstanceOf(User::class, $this->user->setEnabled(true));
+        self::assertTrue($this->user->isEnabled());
     }
 }

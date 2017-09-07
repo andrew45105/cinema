@@ -38,6 +38,13 @@ class UserListener
         }
         /* encode plain password */
         $this->encodeField($entity, 'password');
+
+        if ($entity->getConfirmCode()) {
+            /* encode confirm code */
+            $this->encodeField($entity, 'confirmCode');
+            /* set confirm code created at */
+            $entity->setConfirmCodeCreatedAt(new \DateTime());
+        }
     }
 
     /**
@@ -50,10 +57,16 @@ class UserListener
             return;
         }
 
-        /* update confirmCodeCreatedAt field */
         if ($event->hasChangedField('confirmCode')) {
+            /* encode new confirm code */
             $this->encodeField($entity, 'confirmCode');
+            /* set confirm code created at */
             $event->setNewValue('confirmCodeCreatedAt', new \DateTime());
+        }
+
+        if ($event->hasChangedField('password')) {
+            /* encode new plain password */
+            $this->encodeField($entity, 'password');
         }
     }
 
@@ -67,10 +80,11 @@ class UserListener
     private function encodeField(User $user, string $fieldToEncode)
     {
         $encoder = $this->encoderFactory->getEncoder($user);
-        /**
-         * @ToDo add reflection
-         */
-        //$encodedField = $encoder->encodePassword($user->getPassword(), $user->getSalt());
-        //$user->setPassword($encodedPassword);
+
+        $userClass = new \ReflectionClass(User::class);
+        $fieldValue = $userClass->getMethod('get' . ucfirst($fieldToEncode))->invokeArgs($user, []);
+
+        $encodedFieldValue = $encoder->encodePassword($fieldValue, $user->getSalt());
+        $userClass->getMethod('set' . ucfirst($fieldToEncode))->invokeArgs($user, [$encodedFieldValue]);
     }
 }

@@ -4,7 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use RonteLtd\CommonBundle\Entity\AbstractBaseEntity;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -21,7 +21,7 @@ class Locality extends AbstractBaseEntity
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $id;
 
@@ -29,7 +29,7 @@ class Locality extends AbstractBaseEntity
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $name;
@@ -38,7 +38,7 @@ class Locality extends AbstractBaseEntity
      * @var float
      *
      * @ORM\Column(name="latitude", type="float")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $latitude;
@@ -47,7 +47,7 @@ class Locality extends AbstractBaseEntity
      * @var float
      *
      * @ORM\Column(name="longitude", type="float")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $longitude;

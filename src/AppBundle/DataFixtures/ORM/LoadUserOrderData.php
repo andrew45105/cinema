@@ -17,8 +17,8 @@ class LoadUserOrderData extends AbstractBaseFixture
      */
     protected function doLoad(ObjectManager $manager): void
     {
-        $user1 = $this->getReference('user_+1111');
-        $user2 = $this->getReference('user_+2222');
+        $userMike = $this->getReference('mike');
+        $userJack = $this->getReference('jack');
 
         $seance1 = $this->getReference('seance_1');
         $seance2 = $this->getReference('seance_2');
@@ -26,25 +26,25 @@ class LoadUserOrderData extends AbstractBaseFixture
 
         $orders = [
             new UserOrder([
-                'user' => $user1,
+                'user' => $userMike,
                 'seance' => $seance1,
                 'cinemaSeat' => $seance1->getCinema()->getCinemasSeats()->get(10),
                 'spectatorType' => $seance1->getSeancesPrices()->first()->getSpectatorType(),
             ]),
             new UserOrder([
-                'user' => $user1,
+                'user' => $userMike,
                 'seance' => $seance2,
                 'cinemaSeat' => $seance2->getCinema()->getCinemasSeats()->get(21),
                 'spectatorType' => $seance2->getSeancesPrices()->first()->getSpectatorType(),
             ]),
             new UserOrder([
-                'user' => $user2,
+                'user' => $userJack,
                 'seance' => $seance3,
                 'cinemaSeat' => $seance3->getCinema()->getCinemasSeats()->get(3),
                 'spectatorType' => $seance3->getSeancesPrices()->first()->getSpectatorType(),
             ]),
             new UserOrder([
-                'user' => $user2,
+                'user' => $userJack,
                 'seance' => $seance3,
                 'cinemaSeat' => $seance3->getCinema()->getCinemasSeats()->get(7),
                 'spectatorType' => $seance3->getSeancesPrices()->first()->getSpectatorType(),

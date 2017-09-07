@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use RonteLtd\CommonBundle\Entity\AbstractBaseEntity;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -35,7 +35,7 @@ class Film extends AbstractBaseEntity
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $id;
 
@@ -43,7 +43,7 @@ class Film extends AbstractBaseEntity
      * @var string
      *
      * @ORM\Column(name="type", type="string", length=64, nullable=true)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $type;
 
@@ -52,7 +52,7 @@ class Film extends AbstractBaseEntity
      *
      * @ORM\ManyToMany(targetEntity="AppBundle\Entity\Genre")
      * @ORM\JoinTable(name="films_genres")
-     * @Groups({"genres"})
+     * @JMS\Groups({"genres"})
      */
     private $genres;
 
@@ -60,7 +60,7 @@ class Film extends AbstractBaseEntity
      * @var string
      *
      * @ORM\Column(name="title", type="string", length=255)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $title;
@@ -69,7 +69,7 @@ class Film extends AbstractBaseEntity
      * @var string
      *
      * @ORM\Column(name="description", type="text")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $description;
@@ -78,7 +78,7 @@ class Film extends AbstractBaseEntity
      * @var int
      *
      * @ORM\Column(name="duration", type="integer")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $duration;
@@ -87,7 +87,7 @@ class Film extends AbstractBaseEntity
      * @var int
      *
      * @ORM\Column(name="min_age", type="integer")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $minAge;
 
@@ -95,7 +95,7 @@ class Film extends AbstractBaseEntity
      * @var int
      *
      * @ORM\Column(name="year_of_make", type="integer")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      * @Assert\Regex(pattern="/^[\d]{4}$/")
      */
@@ -105,7 +105,7 @@ class Film extends AbstractBaseEntity
      * @var array
      *
      * @ORM\Column(name="links", type="json_array", nullable=true)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $links;
 

@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use RonteLtd\CommonBundle\Entity\AbstractBaseEntity;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -23,7 +23,7 @@ class Cinema extends AbstractBaseEntity
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $id;
 
@@ -31,7 +31,7 @@ class Cinema extends AbstractBaseEntity
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $name;
@@ -41,7 +41,7 @@ class Cinema extends AbstractBaseEntity
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Locality")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
-     * @Groups({"locality"})
+     * @JMS\Groups({"locality"})
      */
     private $locality;
 
@@ -49,7 +49,7 @@ class Cinema extends AbstractBaseEntity
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\CinemaSeat", mappedBy="cinema")
-     * @Groups({"seats"})
+     * @JMS\Groups({"seats"})
      */
     private $cinemasSeats;
 
@@ -57,7 +57,7 @@ class Cinema extends AbstractBaseEntity
      * @var string
      *
      * @ORM\Column(name="address", type="text")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $address;
@@ -66,7 +66,7 @@ class Cinema extends AbstractBaseEntity
      * @var array
      *
      * @ORM\Column(name="contacts", type="json_array", nullable=true)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $contacts;
 
@@ -74,7 +74,7 @@ class Cinema extends AbstractBaseEntity
      * @var bool
      *
      * @ORM\Column(name="confirmed", type="boolean")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $confirmed;
 

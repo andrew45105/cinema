@@ -9,6 +9,7 @@ use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use FOS\RestBundle\Controller\Annotations\View;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class UserController
@@ -81,6 +82,7 @@ class UserController extends FOSRestController
         $service = $this->get('app.service.entity.user');
         $query = $service->getQuery();
         $result = $service->paginate($query, $page, $limit);
+        $result['data'] = $result['data']->getIterator()->getArrayCopy();
 
         return $result;
     }
@@ -142,11 +144,10 @@ class UserController extends FOSRestController
      *  description="Update an user"
      * )
      *
-     * @Security("user == targetUser || has_role('ROLE_ADMIN')")
+     * @Security("has_role('ROLE_ADMIN')")
      *
-     * @Rest\Patch("/users", name="patch_user")
+     * @Rest\Patch("/users/{id}", name="patch_user")
      * @Rest\RequestParam(name="username", strict=false, description="username")
-     * @Rest\RequestParam(name="password", strict=false, description="password")
      * @Rest\RequestParam(name="phone", strict=false, requirements="\+?[\d]+", description="phone")
      * @Rest\RequestParam(name="locality", strict=false, requirements="\d+", description="locality id")
      * @Rest\RequestParam(name="firstName", strict=false, description="first name")
@@ -154,11 +155,36 @@ class UserController extends FOSRestController
      * @Rest\RequestParam(name="roles", map=true, strict=false, description="list of roles")
      * @Rest\RequestParam(name="enabled", strict=false, requirements="(0|1)", description="enable or disable user")
      * @Rest\RequestParam(name="confirmed", strict=false, requirements="(0|1)", description="confirm or not user")
+     * @param User $user
      * @param ParamFetcherInterface $paramFetcher
      * @View(serializerGroups={"default", "locality"})
      * @return User
      */
-    public function patchUserAction(ParamFetcherInterface $paramFetcher): User
+    public function patchUserAction(User $user, ParamFetcherInterface $paramFetcher): User
+    {
+        return $this
+            ->get('app.service.entity.user')
+            ->update($user, $paramFetcher->all());
+    }
+
+    /**
+     * @ApiDoc(
+     *  section="user",
+     *  description="Update current user"
+     * )
+     *
+     * @Rest\Patch("/users", name="patch_me_user")
+     * @Rest\RequestParam(name="username", strict=false, description="username")
+     * @Rest\RequestParam(name="password", strict=false, description="password")
+     * @Rest\RequestParam(name="phone", strict=false, requirements="\+?[\d]+", description="phone")
+     * @Rest\RequestParam(name="locality", strict=false, requirements="\d+", description="locality id")
+     * @Rest\RequestParam(name="firstName", strict=false, description="first name")
+     * @Rest\RequestParam(name="lastName", strict=false, description="last name")
+     * @param ParamFetcherInterface $paramFetcher
+     * @View(serializerGroups={"default", "locality"})
+     * @return User
+     */
+    public function patchMeUserAction(ParamFetcherInterface $paramFetcher): User
     {
         return $this
             ->get('app.service.entity.user')

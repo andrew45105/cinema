@@ -4,7 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use RonteLtd\CommonBundle\Entity\AbstractBaseEntity;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * CinemaManager
@@ -20,7 +20,7 @@ class CinemaManager extends AbstractBaseEntity
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Cinema")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
-     * @Groups({"cinema"})
+     * @JMS\Groups({"cinema"})
      */
     private $cinema;
 
@@ -30,7 +30,7 @@ class CinemaManager extends AbstractBaseEntity
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
-     * @Groups({"manager"})
+     * @JMS\Groups({"manager"})
      */
     private $manager;
 
@@ -38,7 +38,7 @@ class CinemaManager extends AbstractBaseEntity
      * @var bool
      *
      * @ORM\Column(name="confirmed", type="boolean")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $confirmed;
 

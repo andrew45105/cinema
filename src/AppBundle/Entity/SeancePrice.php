@@ -4,7 +4,7 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use RonteLtd\CommonBundle\Entity\AbstractBaseEntity;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -21,7 +21,7 @@ class SeancePrice extends AbstractBaseEntity
      * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Seance")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
-     * @Groups({"seance"})
+     * @JMS\Groups({"seance"})
      */
     private $seance;
 
@@ -30,7 +30,7 @@ class SeancePrice extends AbstractBaseEntity
      *
      * @ORM\Id
      * @ORM\Column(name="spectator_type", type="string", length=64)
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $spectatorType;
 
@@ -38,7 +38,7 @@ class SeancePrice extends AbstractBaseEntity
      * @var int
      *
      * @ORM\Column(name="price", type="integer")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $price;

@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use RonteLtd\CommonBundle\Entity\AbstractBaseEntity;
-use Symfony\Component\Serializer\Annotation\Groups;
+use JMS\Serializer\Annotation as JMS;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -23,7 +23,7 @@ class Seance extends AbstractBaseEntity
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      */
     private $id;
 
@@ -32,7 +32,7 @@ class Seance extends AbstractBaseEntity
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Cinema")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
-     * @Groups({"cinema"})
+     * @JMS\Groups({"cinema"})
      */
     private $cinema;
 
@@ -41,7 +41,7 @@ class Seance extends AbstractBaseEntity
      *
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Film")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
-     * @Groups({"film"})
+     * @JMS\Groups({"film"})
      */
     private $film;
 
@@ -49,7 +49,7 @@ class Seance extends AbstractBaseEntity
      * @var \DateTime
      *
      * @ORM\Column(name="showing_at", type="datetime")
-     * @Groups({"default"})
+     * @JMS\Groups({"default"})
      * @Assert\NotBlank()
      */
     private $showingAt;
@@ -58,7 +58,7 @@ class Seance extends AbstractBaseEntity
      * @var ArrayCollection
      *
      * @ORM\OneToMany(targetEntity="AppBundle\Entity\SeancePrice", mappedBy="seance")
-     * @Groups({"prices"})
+     * @JMS\Groups({"prices"})
      */
     private $seancesPrices;
 
