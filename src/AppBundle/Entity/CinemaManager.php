@@ -9,15 +9,29 @@ use JMS\Serializer\Annotation as JMS;
 /**
  * CinemaManager
  *
- * @ORM\Table(name="cinemas_managers")
+ * @ORM\Table(
+ *     name="cinemas_managers",
+ *     uniqueConstraints={
+ *          @ORM\UniqueConstraint(name="manager_idx", columns={"cinema_id", "manager_id"})
+ *     }
+ * )
  * @ORM\Entity(repositoryClass="AppBundle\Repository\DefaultRepository")
  */
 class CinemaManager extends AbstractBaseEntity
 {
     /**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @JMS\Groups({"default"})
+     */
+    private $id;
+
+    /**
      * @var Cinema
      *
-     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Cinema")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
      * @JMS\Groups({"cinema"})
@@ -27,7 +41,6 @@ class CinemaManager extends AbstractBaseEntity
     /**
      * @var User
      *
-     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User")
      * @ORM\JoinColumn(nullable=false, onDelete="cascade")
      * @JMS\Groups({"manager"})
@@ -52,6 +65,16 @@ class CinemaManager extends AbstractBaseEntity
         $this->confirmed = false;
 
         parent::__construct($data);
+    }
+
+    /**
+     * Get id
+     *
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
     }
 
     /**

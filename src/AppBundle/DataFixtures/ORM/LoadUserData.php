@@ -109,6 +109,6 @@ class LoadUserData extends AbstractBaseFixture
      */
     public function getOrder()
     {
-        return 9;
+        return 10;
     }
 }

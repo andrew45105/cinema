@@ -1,6 +1,15 @@
 services:
 
-    # Listeners Doctrine
+    #Listeners
+    app.listener.exception:
+        class: AppBundle\EventListeners\ExceptionListener
+        arguments:
+            - "%kernel.environment%"
+            - "@serializer"
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }
+
+    #Listeners Doctrine
     app.listener.doctrine.user:
         class: AppBundle\EventListener\Doctrine\UserListener
         calls:
@@ -9,12 +18,13 @@ services:
             - { name: doctrine.event_listener, event: prePersist }
             - { name: doctrine.event_listener, event: preUpdate }
 
-    #Normalizers
-    app.normalizer.exception:
-        class: AppBundle\Serializer\Normalizer\ExceptionNormalizer
-        arguments: ["%kernel.environment%"]
-        tags:
-            - { name: serializer.normalizer }
+    #Providers
+    user.provider:
+        class: AppBundle\Security\Provider\UserProvider
+        arguments:
+            - AppBundle\Entity\User
+        calls:
+            - [setUserRepository, ['@app.repository.user']]
 
     #Repositories
     app.repository.user:

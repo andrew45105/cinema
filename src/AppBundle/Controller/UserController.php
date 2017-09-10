@@ -52,7 +52,7 @@ class UserController extends FOSRestController
      *
      * @Rest\Get("/users/{id}", name="get_user")
      * @param User $user
-     * @View(serializerGroups={"default", "locality", "managers", "orders"})
+     * @View(serializerGroups={"default", "locality"})
      * @return User
      */
     public function getUserAction(User $user): User
@@ -93,8 +93,8 @@ class UserController extends FOSRestController
      *  description="Get current user"
      * )
      *
-     * @Rest\Get("/users/me", name="get_me_user")
-     * @View(serializerGroups={"default", "locality", "managers", "orders"})
+     * @Rest\Get("/user", name="get_me_user")
+     * @View(serializerGroups={"default", "locality"})
      * @return User
      */
     public function getMeUserAction(): User

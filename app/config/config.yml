@@ -1,7 +1,7 @@
 imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
-    - { resource: services.yml }
+    #- { resource: services.yml }
     - { resource: "@AppBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
@@ -79,7 +79,7 @@ swiftmailer:
     password: '%mailer_password%'
     spool: { type: memory }
 
-#FOS Rest configuration
+# FOS Rest configuration
 fos_rest:
     param_fetcher_listener:
         enabled:  true
@@ -90,6 +90,16 @@ fos_rest:
             - { path: '^/', fallback_format: json, prefer_extension: false }
     view:
         view_response_listener: force
+
+# FOS OAuth Server configuration
+fos_oauth_server:
+    db_driver:           orm
+    client_class:        AppBundle\Entity\OAuth\Client
+    access_token_class:  AppBundle\Entity\OAuth\AccessToken
+    refresh_token_class: AppBundle\Entity\OAuth\RefreshToken
+    auth_code_class:     AppBundle\Entity\OAuth\AuthCode
+    service:
+        user_provider: user.provider
 
 # NelmioApiDoc Configuration
 nelmio_api_doc: ~

@@ -45,11 +45,13 @@ class UserService extends AbstractBaseService
      * UserService constructor.
      *
      * @param ValidatorInterface $validator
-     * @param array$roles
+     * @param array $rolesHierarchy
      */
-    public function __construct(ValidatorInterface $validator, array $roles)
+    public function __construct(ValidatorInterface $validator, array $rolesHierarchy)
     {
-        $this->usersRoles = $roles;
+        $this->usersRoles = array_unique(
+            array_merge(['ROLE_USER'], array_keys($rolesHierarchy))
+        );
 
         parent::__construct($validator);
     }
@@ -89,7 +91,7 @@ class UserService extends AbstractBaseService
     {
         if ($this->getRepository()->findOneBy(['username' => $data['username']])) {
             throw new ConflictHttpException(
-                "User with username '{$data['username']}'' already exists");
+                "User with username '{$data['username']}' already exists");
         }
 
         $this->prepareUserData($data);
@@ -151,7 +153,7 @@ class UserService extends AbstractBaseService
      * @param array $data
      * @return User
      */
-    public function update(User $user, array $data)
+    public function update(User $user, array $data): User
     {
         $this->prepareUserData($data);
         $user->fromArray($data);
@@ -209,12 +211,23 @@ class UserService extends AbstractBaseService
      */
     private function prepareUserData(array &$data)
     {
-        if ($data['locality']) {
+        $data = array_filter($data, function ($elem) {
+            if (is_string($elem)) {
+                return ('' === trim($elem)) ? false : true;
+            } else {
+                return true;
+            }
+        });
+
+        if (isset($data['locality'])) {
             if (!$locality = $this->localityRepository->find($data['locality'])) {
                 throw new NotFoundHttpException(
                     "Locality with id {$data['locality']} not found");
             }
             $data['locality'] = $locality;
+        }
+        if (isset($data['roles'])) {
+            $this->checkRolesData($data['roles']);
         }
     }
 
@@ -253,8 +266,10 @@ class UserService extends AbstractBaseService
                 throw new BadRequestHttpException('Each role must be a string');
             }
         }
-        if ($roles !== array_intersect(array_keys($this->usersRoles), $roles)) {
-            throw new BadRequestHttpException('Incorrect roles array');
+        if ($roles !== array_values(array_intersect($this->usersRoles, $roles))) {
+            throw new BadRequestHttpException(
+                sprintf('Incorrect roles array: [%s]', implode(', ', $roles))
+            );
         }
     }
 }

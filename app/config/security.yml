@@ -16,14 +16,23 @@ security:
                 class: AppBundle:User
 
     firewalls:
-        dev:
-            pattern: ^/(_(profiler|wdt|error)|css|images|js)/
-            security: false
+        oauth_token:
+            pattern:    ^/oauth/v2/token
+            security:   false
+
+        oauth_authorize:
+            pattern:    ^/oauth/v2/auth
+            anonymous: true
+            # Add your favorite authentication process here
+
+        api:
+            pattern:    ^/api
+            fos_oauth:  true
+            stateless:  true
+            anonymous:  true # can be omitted as its default value
 
     access_control:
-        #- { path: ^/api/doc, methods: [GET], roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        #- { path: ^/api/v(.*)/users/code, methods: [POST], roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        #- { path: ^/api/v(.*)/users, methods: [POST], roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        #- { path: ^/api/v(.*)/*, roles: ROLE_USER }
-        #- { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/doc, methods: [GET], roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v(.*)/users, methods: [POST], roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v(.*)/*, roles: ROLE_USER }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
